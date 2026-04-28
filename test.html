@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KSE-100 Alpha | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #06040f;
+            --bg-glow-1: rgba(109, 40, 217, 0.22);
+            --bg-glow-2: rgba(147, 51, 234, 0.18);
+            --card-bg: rgba(14, 10, 28, 0.78);
+            --card-bg-strong: rgba(20, 14, 36, 0.92);
+            --accent-purple: #a855f7;
+            --accent-violet: #7c3aed;
+            --accent-indigo: #6366f1;
+            --accent-green: #34d399;
+            --accent-red: #f87171;
+            --text-main: #f5f3ff;
+            --text-dim: #b3add3;
+            --glass-border: rgba(255, 255, 255, 0.11);
+            --muted-border: rgba(173, 139, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            color: var(--text-main);
+            background:
+                radial-gradient(circle at 10% 15%, var(--bg-glow-1) 0%, transparent 40%),
+                radial-gradient(circle at 85% 78%, var(--bg-glow-2) 0%, transparent 42%),
+                linear-gradient(180deg, #04030a 0%, var(--bg-color) 100%);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2.25rem 1.25rem 3rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 1.6px;
+            background: linear-gradient(90deg, #e9d5ff, var(--accent-purple), var(--accent-indigo));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            background: rgba(52, 211, 153, 0.09);
+            color: var(--accent-green);
+            border: 1px solid rgba(52, 211, 153, 0.23);
+            border-radius: 999px;
+            font-size: 0.78rem;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.48rem 0.9rem;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.8);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55); }
+            70% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.4rem;
+            border: 1px solid var(--glass-border);
+            background: linear-gradient(145deg, rgba(56, 36, 97, 0.6), rgba(15, 10, 34, 0.95));
+            padding: 2rem 1.4rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.7rem, 3.2vw, 2.25rem);
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            color: var(--text-dim);
+            max-width: 700px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .floating-icons {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .icon-pill {
+            position: absolute;
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(15, 10, 34, 0.75);
+            box-shadow: 0 12px 26px rgba(109, 40, 217, 0.2);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .icon-pill::before {
+            content: "";
+            position: absolute;
+            inset: 11px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #c084fc, #6366f1);
+            opacity: 0.82;
+        }
+
+        .icon-pill:nth-child(1) { top: 14%; right: 14%; animation-delay: 0s; }
+        .icon-pill:nth-child(2) { top: 56%; right: 4%; animation-delay: 1.5s; }
+        .icon-pill:nth-child(3) { top: 8%; right: 36%; animation-delay: 3s; }
+        .icon-pill:nth-child(4) { top: 58%; right: 24%; animation-delay: 2.2s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(4deg); }
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 0.7rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .tab-btn {
+            border: 1px solid var(--muted-border);
+            border-radius: 999px;
+            background: rgba(32, 20, 59, 0.5);
+            color: var(--text-dim);
+            padding: 0.48rem 1rem;
+            font-size: 0.76rem;
+            font-weight: 600;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .tab-btn.active {
+            color: #ede9fe;
+            background: linear-gradient(130deg, rgba(124, 58, 237, 0.4), rgba(79, 70, 229, 0.35));
+            border-color: rgba(192, 132, 252, 0.45);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            border: 1px solid var(--glass-border);
+            border-radius: 1.2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            padding: 1.15rem;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(192, 132, 252, 0.5);
+            box-shadow: 0 18px 28px rgba(67, 35, 128, 0.22);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 0.75rem;
+        }
+
+        .badge-soft {
+            border-radius: 999px;
+            border: 1px solid rgba(192, 132, 252, 0.45);
+            color: #e9d5ff;
+            background: rgba(124, 58, 237, 0.2);
+            padding: 0.18rem 0.55rem;
+            font-size: 0.67rem;
+            font-weight: 700;
+        }
+
+        .result-value {
+            font-size: 1.95rem;
+            font-weight: 700;
+            line-height: 1.15;
+        }
+
+        .result-sub {
+            margin-top: 0.4rem;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.45;
+        }
+
+        .metric-grid {
+            margin-top: 0.8rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.45rem;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .metric-item span {
+            color: #f5f3ff;
+            font-weight: 600;
+        }
+
+        .balance-bar-wrap {
+            margin-top: 0.9rem;
+            display: grid;
+            gap: 0.45rem;
+        }
+
+        .balance-bar {
+            height: 10px;
+            width: 100%;
+            border-radius: 999px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 30% 22% 16% 18% 14%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .segment { height: 100%; }
+        .s1 { background: #e9d5ff; }
+        .s2 { background: #a78bfa; }
+        .s3 { background: #818cf8; }
+        .s4 { background: #7c3aed; }
+        .s5 { background: #4c1d95; }
+
+        .segment-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.68rem;
+            color: var(--text-dim);
+        }
+
+        .chart-card {
+            margin-top: 0.8rem;
+            background: var(--card-bg-strong);
+        }
+
+        #forecast-chart {
+            width: 100%;
+            height: 260px;
+            margin-top: 1rem;
+            border-radius: 1rem;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            padding: 16px;
+            background:
+                linear-gradient(180deg, rgba(124, 58, 237, 0.1), rgba(0, 0, 0, 0.2)),
+                rgba(5, 3, 15, 0.72);
+            overflow: hidden;
+        }
+
+        .bar {
+            flex: 1;
+            min-height: 6px;
+            border-radius: 6px 6px 2px 2px;
+            transition: height 0.45s ease, filter 0.25s ease;
+            position: relative;
+        }
+
+        .bar.history {
+            background: linear-gradient(180deg, rgba(196, 181, 253, 0.65), rgba(109, 40, 217, 0.45));
+        }
+
+        .bar.forecast {
+            background: linear-gradient(180deg, #c084fc, #6366f1);
+            box-shadow: 0 0 16px rgba(167, 139, 250, 0.28);
+        }
+
+        .bar:hover { filter: brightness(1.15); }
+
+        .bar:hover::after {
+            content: attr(data-label);
+            position: absolute;
+            top: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            border-radius: 7px;
+            border: 1px solid rgba(192, 132, 252, 0.55);
+            padding: 4px 8px;
+            background: rgba(11, 7, 26, 0.95);
+            color: #ede9fe;
+            font-size: 0.68rem;
+            z-index: 30;
+        }
+
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: minmax(220px, 1fr) minmax(240px, 1fr);
+            gap: 1.2rem;
+            margin-top: 1.2rem;
+        }
+
+        .panel-title {
+            font-size: 0.73rem;
+            text-transform: uppercase;
+            letter-spacing: 0.85px;
+            color: #ddd6fe;
+            margin-bottom: 0.45rem;
+        }
+
+        .table-list {
+            font-size: 0.84rem;
+            color: var(--text-dim);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.8rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(9, 6, 20, 0.6);
+            min-height: 140px;
+        }
+
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.8rem;
+            padding: 0.38rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .table-row:last-child { border-bottom: none; }
+        .table-row strong { color: #f5f3ff; }
+
+        .explain {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        .btn-refresh {
+            width: 100%;
+            margin-top: 1rem;
+            border: 1px solid rgba(199, 165, 255, 0.45);
+            border-radius: 0.9rem;
+            background: linear-gradient(130deg, rgba(124, 58, 237, 0.72), rgba(99, 102, 241, 0.72));
+            color: #faf5ff;
+            padding: 0.92rem 1.1rem;
+            font-weight: 700;
+            font-size: 0.84rem;
+            letter-spacing: 0.95px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 26px rgba(109, 40, 217, 0.33);
+        }
+
+        .market-table-card {
+            margin-top: 1rem;
+            background: var(--card-bg-strong);
+            overflow: hidden;
+        }
+
+        .market-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.6rem;
+            font-size: 0.82rem;
+        }
+
+        .market-table thead th {
+            text-align: left;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            font-weight: 600;
+            padding: 0.65rem 0.45rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .market-table tbody td {
+            padding: 0.72rem 0.45rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #f3f0ff;
+        }
+
+        .market-table tbody tr:hover {
+            background: rgba(124, 58, 237, 0.08);
+        }
+
+        .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.66rem;
+            font-weight: 700;
+            margin-right: 0.45rem;
+            background: linear-gradient(140deg, #8b5cf6, #6366f1);
+            color: #f5f3ff;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.52rem;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            letter-spacing: 0.45px;
+            text-transform: uppercase;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ddd6fe;
+            background: rgba(124, 58, 237, 0.16);
+        }
+
+        .badge.up {
+            color: #6ee7b7;
+            border-color: rgba(52, 211, 153, 0.35);
+            background: rgba(52, 211, 153, 0.11);
+        }
+
+        .badge.down {
+            color: #fca5a5;
+            border-color: rgba(248, 113, 113, 0.35);
+            background: rgba(248, 113, 113, 0.11);
+        }
+
+        .subscribe-card {
+            margin-top: 1rem;
+            position: relative;
+            overflow: visible;
+        }
+
+        .subscribe-copy {
+            color: var(--text-dim);
+            font-size: 0.84rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .subscribe-row {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        #sub-email {
+            flex: 1;
+            min-width: 210px;
+            border-radius: 0.82rem;
+            border: 1px solid var(--glass-border);
+            background: rgba(8, 6, 19, 0.86);
+            color: var(--text-main);
+            font-size: 0.88rem;
+            padding: 0.82rem 1rem;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #sub-email:focus {
+            border-color: rgba(167, 139, 250, 0.7);
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.16);
+        }
+
+        .freq-wrap {
+            display: flex;
+            border-radius: 0.82rem;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            background: rgba(11, 8, 24, 0.8);
+        }
+
+        .freq-btn {
+            border: none;
+            cursor: pointer;
+            font-size: 0.73rem;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            padding: 0.8rem 1rem;
+            color: var(--text-dim);
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+
+        .freq-btn.freq-active {
+            color: #f5f3ff;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.46), rgba(99, 102, 241, 0.4));
+        }
+
+        #btn-subscribe {
+            width: 100%;
+            margin-top: 0.8rem;
+            border-radius: 0.85rem;
+            border: 1px solid rgba(192, 132, 252, 0.5);
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.85), rgba(79, 70, 229, 0.85));
+            color: #faf5ff;
+            padding: 0.9rem;
+            font-size: 0.82rem;
+            letter-spacing: 0.85px;
+            text-transform: uppercase;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #btn-subscribe:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(124, 58, 237, 0.27);
+        }
+
+        #sub-toast {
+            position: absolute;
+            bottom: -58px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            background: rgba(9, 6, 21, 0.95);
+            border: 1px solid var(--glass-border);
+            border-radius: 0.75rem;
+            padding: 0.72rem 1rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            font-size: 0.8rem;
+        }
+
+        .loading {
+            opacity: 0.56;
+            pointer-events: none;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2.1rem;
+            color: var(--text-dim);
+            font-size: 0.74rem;
+            letter-spacing: 0.6px;
+        }
+
+        @media (max-width: 900px) {
+            .forecast-grid { grid-template-columns: 1fr; }
+            .icon-pill { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">KSE-100 Alpha</div>
+            <div id="status-container" class="status-badge">
+                <span class="pulse"></span>
+                <span id="status-text">CONNECTING...</span>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div class="floating-icons">
+                <span class="icon-pill"></span>
+                <span class="icon-pill"></span>
+                <span class="icon-pill"></span>
+                <span class="icon-pill"></span>
+            </div>
+            <h1>Institutional KSE-100 Intelligence</h1>
+            <p>
+                Real-time classifier signal, volatility estimate, and LSTM trajectory in one unified command center.
+                Metrics are preserved from the original model outputs and presented with a denser black-purple trading UX.
+            </p>
+        </section>
+
+        <div class="tab-nav">
+            <button class="tab-btn active">Real-Time Dashboard</button>
+        </div>
+
+        <div id="realtime-section">
+            <div class="dashboard-grid">
+                <div class="card" id="card-signal">
+                    <div class="card-header">
+                        <span>Directional Target</span>
+                        <span id="conf-val" class="badge-soft">...%</span>
+                    </div>
+                    <div class="result-value" id="signal-val">...</div>
+                    <div class="result-sub">XGBoost 3-Class Signal</div>
+                    <div class="metric-grid">
+                        <div class="metric-item">Baseline Acc: <span>~50%</span></div>
+                        <div class="metric-item">Classes: <span>3</span></div>
+                    </div>
+                    <div class="result-sub" style="margin-top: 0.7rem;">
+                        Basis: Gradient Boosted Tree focusing on bounded threshold labels over daily horizon.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span>Market Volatility</span>
+                        <span class="badge-soft">XGBoost</span>
+                    </div>
+                    <div class="result-value" id="vol-val">...</div>
+                    <div class="result-sub">Next-day volatility forecast</div>
+                    <div class="metric-grid">
+                        <div class="metric-item">RMSE: <span>0.0042</span></div>
+                        <div class="metric-item">Samples: <span>756</span></div>
+                    </div>
+                    <div class="result-sub" style="margin-top: 0.7rem;">
+                        Basis: Regression over momentum and PCA-aligned volatility vectors.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span>Signal Blend Snapshot</span>
+                        <span class="badge-soft">STAT CARD</span>
+                    </div>
+                    <div class="result-value" id="blend-balance">$10,976</div>
+                    <div class="result-sub">
+                        Display card inspired by your segmented statistic component style.
+                    </div>
+                    <div class="balance-bar-wrap">
+                        <div class="balance-bar">
+                            <span class="segment s1"></span>
+                            <span class="segment s2"></span>
+                            <span class="segment s3"></span>
+                            <span class="segment s4"></span>
+                            <span class="segment s5"></span>
+                        </div>
+                        <div class="segment-labels">
+                            <span>Momentum 30%</span>
+                            <span>Macro 22%</span>
+                            <span>Trend 16%</span>
+                            <span>Risk 18%</span>
+                            <span>Noise 14%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <div class="card-header">KSE-100 Price Trajectory (14-Day History + 7-Day LSTM Forecast)</div>
+                <div id="forecast-chart"></div>
+                <div class="forecast-grid">
+                    <div>
+                        <div class="panel-title">Next 7 Days Forecast</div>
+                        <div id="forecast-table" class="table-list"></div>
+                        <div class="panel-title" style="margin-top: 1rem; color: var(--text-dim);">Previous 7 Days Known</div>
+                        <div id="history-table" class="table-list"></div>
+                    </div>
+                    <div>
+                        <div class="panel-title">Model Basis</div>
+                        <p class="explain">
+                            Proprietary <strong>LSTM (Long Short-Term Memory)</strong> model trained on
+                            multi-year KSE-100 dynamics and regime-sensitive volatility signatures.
+                        </p>
+                        <p class="explain" style="margin-top: 0.65rem;">
+                            Forecast section keeps your existing numbers, but now presents them in a higher-contrast
+                            visual layer built for quicker daily scanning.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-refresh" onclick="refreshData()">Fetch Latest Market Pulse</button>
+
+            <div class="card market-table-card">
+                <div class="card-header">Market Leads Table <span class="badge-soft">TABLE VIEW</span></div>
+                <table class="market-table">
+                    <thead>
+                        <tr>
+                            <th>Lead</th>
+                            <th>Bucket</th>
+                            <th>Value</th>
+                            <th>Trend</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="market-table-body">
+                        <tr>
+                            <td colspan="5" style="text-align:center; color:var(--text-dim);">Loading market entries...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card subscribe-card">
+                <div class="card-header">Subscribe to AI Insights</div>
+                <p class="subscribe-copy">
+                    Get KSE-100 market intelligence in your inbox with signal direction, volatility trends,
+                    and LSTM projection snapshots in a compact report.
+                </p>
+                <div class="subscribe-row">
+                    <input type="email" id="sub-email" placeholder="your.email@example.com">
+                    <div class="freq-wrap">
+                        <button id="freq-daily" onclick="setFrequency('daily')" class="freq-btn freq-active">DAILY</button>
+                        <button id="freq-weekly" onclick="setFrequency('weekly')" class="freq-btn">WEEKLY</button>
+                    </div>
+                </div>
+                <button id="btn-subscribe" onclick="handleSubscribe()">Subscribe for Insights</button>
+                <div id="sub-toast"></div>
+            </div>
+        </div>
+
+        <footer>KSE-100 Alpha | AI221 Project</footer>
+    </div>
+
+    <script>
+        let selectedFrequency = 'daily';
+
+        function toBadge(signal) {
+            if (signal === 'Bullish') return '<span class="badge up">Bullish</span>';
+            if (signal === 'Bearish') return '<span class="badge down">Bearish</span>';
+            return '<span class="badge">Neutral</span>';
+        }
+
+        function setFrequency(freq) {
+            selectedFrequency = freq;
+            const daily = document.getElementById('freq-daily');
+            const weekly = document.getElementById('freq-weekly');
+            daily.classList.toggle('freq-active', freq === 'daily');
+            weekly.classList.toggle('freq-active', freq === 'weekly');
+        }
+
+        function showToast(message, isSuccess) {
+            const toast = document.getElementById('sub-toast');
+            toast.innerText = message;
+            toast.style.opacity = '1';
+            toast.style.color = isSuccess ? '#6ee7b7' : '#fca5a5';
+            toast.style.borderColor = isSuccess ? 'rgba(52,211,153,0.35)' : 'rgba(248,113,113,0.35)';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+            }, 4000);
+        }
+
+        function renderForecastTable(data) {
+            const container = document.getElementById('forecast-table');
+            container.innerHTML = '';
+            data.forecast.forEach((price, i) => {
+                const row = document.createElement('div');
+                row.className = 'table-row';
+                row.innerHTML = `<span>${data.forecast_dates[i]} (Pred)</span><strong>${price.toLocaleString(undefined, {maximumFractionDigits: 0})} pts</strong>`;
+                container.appendChild(row);
+            });
+        }
+
+        function renderHistoryTable(data) {
+            const container = document.getElementById('history-table');
+            container.innerHTML = '';
+            const histPart = data.historical_close.slice(-7);
+            const datePart = data.historical_dates.slice(-7);
+            histPart.forEach((price, i) => {
+                const row = document.createElement('div');
+                row.className = 'table-row';
+                row.innerHTML = `<span>${datePart[i]}</span><span>${price.toLocaleString(undefined, {maximumFractionDigits: 0})} pts</span>`;
+                container.appendChild(row);
+            });
+        }
+
+        function renderEnhancedChart(data) {
+            const chart = document.getElementById('forecast-chart');
+            chart.innerHTML = '';
+            const allValues = [...data.historical_close, ...data.forecast];
+            const min = Math.min(...allValues);
+            const max = Math.max(...allValues);
+            const range = (max - min) || 1;
+
+            data.historical_close.forEach((val, i) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar history';
+                bar.style.height = ((val - min) / range * 80 + 10) + '%';
+                bar.setAttribute('data-label', `${data.historical_dates[i]}: ${val.toFixed(0)}`);
+                chart.appendChild(bar);
+            });
+
+            const spacer = document.createElement('div');
+            spacer.style.width = '2px';
+            spacer.style.height = '100%';
+            spacer.style.background = 'rgba(255,255,255,0.12)';
+            chart.appendChild(spacer);
+
+            data.forecast.forEach((val, i) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar forecast';
+                bar.style.height = ((val - min) / range * 80 + 10) + '%';
+                bar.setAttribute('data-label', `PRED ${data.forecast_dates[i]}: ${val.toFixed(0)}`);
+                chart.appendChild(bar);
+            });
+        }
+
+        function renderMarketTable(data, signal) {
+            const tableBody = document.getElementById('market-table-body');
+            tableBody.innerHTML = '';
+            const rows = data.forecast.slice(0, 7).map((value, idx) => {
+                const prev = idx === 0 ? data.historical_close[data.historical_close.length - 1] : data.forecast[idx - 1];
+                const delta = ((value - prev) / prev) * 100;
+                return {
+                    lead: `KSE-${idx + 1}`,
+                    bucket: idx < 3 ? 'Short Horizon' : idx < 5 ? 'Momentum' : 'Extended',
+                    value: `${value.toLocaleString(undefined, { maximumFractionDigits: 0 })} pts`,
+                    trend: `${delta >= 0 ? '+' : ''}${delta.toFixed(2)}%`,
+                    signal: signal
+                };
+            });
+
+            rows.forEach((row, i) => {
+                const tr = document.createElement('tr');
+                const trendClass = row.trend.startsWith('+') ? 'up' : 'down';
+                tr.innerHTML = `
+                    <td><span class="avatar">${row.lead.slice(-1)}</span>${row.lead}</td>
+                    <td><span class="badge">${row.bucket}</span></td>
+                    <td>${row.value}</td>
+                    <td><span class="badge ${trendClass}">${row.trend}</span></td>
+                    <td>${toBadge(row.signal)}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        async function handleSubscribe() {
+            const emailInput = document.getElementById('sub-email');
+            const email = emailInput.value.trim();
+            const btn = document.getElementById('btn-subscribe');
+
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                showToast('Please enter a valid email address.', false);
+                return;
+            }
+
+            btn.innerText = 'Subscribing...';
+            btn.classList.add('loading');
+
+            try {
+                const res = await fetch('/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, frequency: selectedFrequency })
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'ok') {
+                    showToast('✓ ' + data.message, true);
+                    emailInput.value = '';
+                } else {
+                    showToast(data.message || data.detail || 'Subscription failed.', false);
+                }
+            } catch (err) {
+                showToast('Connection error. Please try again.', false);
+            } finally {
+                btn.innerText = 'Subscribe for Insights';
+                btn.classList.remove('loading');
+            }
+        }
+
+        async function checkStatus() {
+            const statusText = document.getElementById('status-text');
+            const pulse = document.querySelector('.pulse');
+            try {
+                const res = await fetch('/status');
+                const data = await res.json();
+                if (data.status === 'online') {
+                    statusText.innerText = 'SYSTEM ONLINE';
+                    pulse.style.background = '#34d399';
+                    pulse.style.boxShadow = '0 0 10px #34d399';
+                } else {
+                    statusText.innerText = 'SYSTEM ERROR';
+                    pulse.style.background = '#f87171';
+                    pulse.style.boxShadow = '0 0 10px #f87171';
+                }
+            } catch (e) {
+                statusText.innerText = 'OFFLINE';
+                pulse.style.background = '#f87171';
+                pulse.style.boxShadow = '0 0 10px #f87171';
+            }
+        }
+
+        async function refreshData() {
+            const btn = document.querySelector('.btn-refresh');
+            btn.innerText = 'Processing Pulse...';
+            btn.classList.add('loading');
+            try {
+                const signalRes = await fetch('/predict/classification');
+                const signalData = await signalRes.json();
+                const signalEl = document.getElementById('signal-val');
+                signalEl.innerText = signalData.signal.toUpperCase();
+                signalEl.style.color = signalData.signal === 'Bullish' ? '#6ee7b7' : (signalData.signal === 'Bearish' ? '#fca5a5' : '#fcd34d');
+                document.getElementById('conf-val').innerText = (signalData.confidence * 100).toFixed(1) + '% CONF';
+
+                const confidence = Math.max(0, Math.min(99, Math.round(signalData.confidence * 100)));
+                document.getElementById('blend-balance').innerText = '$' + (10000 + confidence * 15).toLocaleString();
+
+                const volRes = await fetch('/predict/volatility');
+                const volData = await volRes.json();
+                document.getElementById('vol-val').innerText = (volData.forecasted_volatility * 100).toFixed(2) + '%';
+
+                const forecastRes = await fetch('/predict/forecast');
+                const fData = await forecastRes.json();
+                renderEnhancedChart(fData);
+                renderForecastTable(fData);
+                renderHistoryTable(fData);
+                renderMarketTable(fData, signalData.signal);
+            } catch (err) {
+                console.error('Pulse fetch failed', err);
+            } finally {
+                btn.innerText = 'Fetch Latest Market Pulse';
+                btn.classList.remove('loading');
+            }
+        }
+
+        window.onload = () => {
+            checkStatus();
+            refreshData();
+        };
+    </script>
+</body>
+</html>
+
